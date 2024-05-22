@@ -28,8 +28,10 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
     // Desestructurando el DTO
     const { page, limit } = paginationDto;
 
-    // Obtener la cantidad total de Products
-    const totalProducts = await this.product.count();
+    // Obtener la cantidad total de Products (sin contar los eliminados)
+    const totalProducts = await this.product.count({
+      where: { available: true }
+    });
 
     // Obtener la última página
     const lastPage = Math.ceil(totalProducts / limit);
@@ -39,6 +41,9 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
         // Filtros de paginación
         skip: (page - 1) * limit,
         take: limit,
+        where: {
+          available: true
+        }
       }),
       meta: {
         total: totalProducts,
@@ -52,7 +57,8 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
     // Intentar traser el Product por su ID
     const product = await this.product.findFirst({
       where: {
-        id
+        id,
+        available: true
       }
     });
 
@@ -79,9 +85,14 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
     // Intentar encontrar el Product
     await this.findOne(id);
 
-    // Eliminar el Product
-    return this.product.delete({
-      where: { id }
+    // Eliminar el Product (soft delete)
+    const product = await this.product.update({
+      where: { id },
+      data: {
+        available: false
+      }
     });
+
+    return product;
   }
 }
