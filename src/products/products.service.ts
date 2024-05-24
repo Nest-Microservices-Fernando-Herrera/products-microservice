@@ -71,13 +71,16 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
+    // Desestructurar el DTO (utilizar todas las propiedades a excepción del 'id')
+    const { id: __, ...rest } = updateProductDto;
+
     // Intentar encontrar el Product
     await this.findOne(id);
 
     // Actualizar el Product
     return this.product.update({
       where: { id },
-      data: updateProductDto
+      data: rest,
     });
   }
 
