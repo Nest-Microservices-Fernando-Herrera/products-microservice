@@ -1,12 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { Logger, ValidationPipe } from '@nestjs/common';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { AppModule } from './app.module';
 import { envs } from './config';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   // Manejando los logs de esta sección
-  const logger = new Logger('Main');
+  const logger = new Logger('ProductsMS-Main');
 
   // Creando la instancia de la app e implementar el microservicio
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
@@ -26,7 +26,7 @@ async function bootstrap() {
     // Habilitandod los DTOs
     whitelist: true,
     forbidNonWhitelisted: true,
-  }))
+  }));
 
   // Levantando el servidor
   await app.listen();
